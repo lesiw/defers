@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+[ -z "$RUNCTRID" ] && RUNCTR=./etc/Dockerfile.dev exec run "$(basename "$0")"
+
+run clean
+run ci

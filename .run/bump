@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -e
+
+if ! tag=$(git describe --abbrev=0 --tags)
+then
+    tag="v0.0.0"
+fi
+
+git tag "$(echo "$tag" | bump -s 1)"
+run ci
+git push --tags
