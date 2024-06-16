@@ -9,11 +9,14 @@ import (
 	"os/signal"
 )
 
+type empty = struct{}
+
 var (
 	defers []func()
 
-	exit = make(chan int)
-	sig  = make(chan os.Signal, 1)
+	exit  = make(chan int)
+	queue = make(chan defunc)
+	sig   = make(chan os.Signal, 1)
 )
 
 func init() {
@@ -24,17 +27,34 @@ func init() {
 		}
 		os.Exit(code)
 	}()
+	go func() {
+		for d := range queue {
+			defers = append([]func(){d.fn}, defers...)
+			d.added <- empty{}
+		}
+	}()
 	signal.Notify(sig, os.Interrupt)
 	go func() { exit <- exitCode(<-sig) }()
 }
 
 // Add adds a function to the front of the defer list.
 func Add(f func()) {
-	defers = append([]func(){f}, defers...)
+	d := newDefunc(f)
+	queue <- d
+	<-d.added
 }
 
 // Exit runs all defers, then exits the program.
 func Exit(code int) {
 	exit <- code
 	select {}
+}
+
+type defunc struct {
+	fn    func()
+	added chan empty
+}
+
+func newDefunc(f func()) defunc {
+	return defunc{f, make(chan empty)}
 }
