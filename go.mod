@@ -1,3 +1,3 @@
 module lesiw.io/defers
 
-go 1.22.3
+go 1.9
