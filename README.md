@@ -5,8 +5,12 @@
 ``` go
 // Package defers handles program-wide defers.
 //
-// It executes them when defers.Exit() is called or if an os.Interrupt signal
-// is sent.
+// Defers are executed when defers.Exit() is called or when an interrupt signal
+// is caught, whichever happens first.
+//
+// If an interrupt signal is caught, the program will exit with a status of
+// 128 plus the signal number. In the event the signal number cannot be
+// determined, the program will exit with exit status 1.
 ```
 
 ## Example

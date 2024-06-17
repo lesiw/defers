@@ -1,12 +1,17 @@
 // Package defers handles program-wide defers.
 //
-// It executes them when defers.Exit() is called or if an os.Interrupt signal
-// is sent.
+// Defers are executed when defers.Exit() is called or when an interrupt signal
+// is caught, whichever happens first.
+//
+// If an interrupt signal is caught, the program will exit with a status of
+// 128 plus the signal number. In the event the signal number cannot be
+// determined, the program will exit with exit status 1.
 package defers
 
 import (
 	"os"
 	"os/signal"
+	"syscall"
 )
 
 type empty = struct{}
@@ -33,7 +38,7 @@ func init() {
 			d.added <- empty{}
 		}
 	}()
-	signal.Notify(sig, os.Interrupt)
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
 	go func() { exit <- exitCode(<-sig) }()
 }
 
@@ -57,4 +62,18 @@ type defunc struct {
 
 func newDefunc(f func()) defunc {
 	return defunc{f, make(chan empty)}
+}
+
+func exitCode(s os.Signal) (code int) {
+	defer func() {
+		if code == 0 {
+			code = 1
+		}
+	}()
+	sig, ok := s.(syscall.Signal)
+	if !ok {
+		return
+	}
+	code = (128 + int(sig)) % 255
+	return
 }
