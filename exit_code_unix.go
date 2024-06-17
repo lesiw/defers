@@ -5,14 +5,19 @@ package defers
 
 import (
 	"os"
-
-	"golang.org/x/sys/unix"
+	"syscall"
 )
 
 func exitCode(s os.Signal) (code int) {
-	code = (128 + int(unix.SignalNum(s.String()))) % 255
-	if code == 0 {
-		code = 1
+	defer func() {
+		if code == 0 {
+			code = 1
+		}
+	}()
+	sig, ok := s.(syscall.Signal)
+	if !ok {
+		return
 	}
+	code = (128 + int(sig)) % 255
 	return
 }
