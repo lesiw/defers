@@ -16,6 +16,11 @@ import (
 
 type empty = struct{}
 
+type defunc struct {
+	fn    func()
+	added chan empty
+}
+
 var (
 	defers []func()
 
@@ -44,7 +49,7 @@ func init() {
 
 // Add adds a function to the front of the defer list.
 func Add(f func()) {
-	d := newDefunc(f)
+	d := defunc{f, make(chan empty)}
 	queue <- d
 	<-d.added
 }
@@ -53,15 +58,6 @@ func Add(f func()) {
 func Exit(code int) {
 	exit <- code
 	select {}
-}
-
-type defunc struct {
-	fn    func()
-	added chan empty
-}
-
-func newDefunc(f func()) defunc {
-	return defunc{f, make(chan empty)}
 }
 
 func exitCode(s os.Signal) (code int) {
