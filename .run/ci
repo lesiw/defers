@@ -5,4 +5,3 @@ set -e
 run tidy
 run lint
 run test
-mingo -check

@@ -1,0 +1,6 @@
+FROM golang:latest
+
+RUN go install gotest.tools/gotestsum@latest && \
+    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
+        | sh -s -- -b $(go env GOPATH)/bin v1.57.1 && \
+    go install github.com/bobg/mingo/cmd/mingo@latest

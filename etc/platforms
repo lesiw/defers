@@ -1,0 +1,12 @@
+linux:386
+linux:amd64
+linux:arm
+linux:arm64
+darwin:amd64
+darwin:arm64
+windows:386
+windows:arm
+windows:amd64
+plan9:386
+plan9:arm
+plan9:amd64

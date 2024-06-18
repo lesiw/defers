@@ -3,3 +3,4 @@
 set -e
 
 golangci-lint run
+mingo -check

@@ -2,7 +2,14 @@
 
 set -e
 
-[ -z "$RUNCTRID" ] && RUNCTR=./etc/Dockerfile.dev exec run "$(basename "$0")"
-
 run clean
 run ci
+
+export CGO_ENABLED=0
+
+while IFS=':' read -r GOOS GOARCH
+do
+    echo "Building $GOOS/$GOARCH"
+    export GOOS GOARCH
+    go build -ldflags="-s -w" -o /dev/null
+done < etc/platforms
