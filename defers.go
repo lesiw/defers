@@ -29,20 +29,21 @@ var (
 
 func init() {
 	go func() {
-		code := <-exit
-		for _, f := range defers {
-			f()
+		for {
+			select {
+			case code := <-exit:
+				for _, f := range defers {
+					f()
+				}
+				os.Exit(code)
+			case d := <-queue:
+				defers = append([]func(){d.fn}, defers...)
+				d.added <- empty{}
+			}
 		}
-		os.Exit(code)
 	}()
-	go func() {
-		for d := range queue {
-			defers = append([]func(){d.fn}, defers...)
-			d.added <- empty{}
-		}
-	}()
-	notify(sig)
 	go func() { exit <- signalCode(<-sig) }()
+	notify(sig)
 }
 
 // Add adds a function to the front of the defer list.
