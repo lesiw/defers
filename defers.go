@@ -10,8 +10,6 @@ package defers
 
 import (
 	"os"
-	"os/signal"
-	"syscall"
 )
 
 type empty = struct{}
@@ -43,8 +41,8 @@ func init() {
 			d.added <- empty{}
 		}
 	}()
-	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
-	go func() { exit <- exitCode(<-sig) }()
+	notify(sig)
+	go func() { exit <- signalCode(<-sig) }()
 }
 
 // Add adds a function to the front of the defer list.
@@ -58,18 +56,4 @@ func Add(f func()) {
 func Exit(code int) {
 	exit <- code
 	select {}
-}
-
-func exitCode(s os.Signal) (code int) {
-	defer func() {
-		if code == 0 {
-			code = 1
-		}
-	}()
-	sig, ok := s.(syscall.Signal)
-	if !ok {
-		return
-	}
-	code = (128 + int(sig)) % 255
-	return
 }
