@@ -8,53 +8,55 @@
 // determined, the program will exit with exit status 1.
 package defers
 
-import (
-	"os"
-)
-
-type empty = struct{}
+import "os"
 
 type defunc struct {
 	fn    func()
-	added chan empty
+	added chan struct{}
 }
 
 var (
 	defers []func()
 
-	exit  = make(chan int)
-	queue = make(chan defunc)
-	sig   = make(chan os.Signal, 1)
+	exit = os.Exit
+
+	exitc  = make(chan int)
+	deferc = make(chan defunc)
+	clearc = make(chan chan struct{})
+	sigc   = make(chan os.Signal, 1)
 )
 
 func init() {
 	go func() {
 		for {
 			select {
-			case code := <-exit:
+			case code := <-exitc:
 				for _, f := range defers {
 					f()
 				}
-				os.Exit(code)
-			case d := <-queue:
+				exit(code)
+			case d := <-deferc:
 				defers = append([]func(){d.fn}, defers...)
-				d.added <- empty{}
+				d.added <- struct{}{}
+			case c := <-clearc:
+				defers = []func(){}
+				c <- struct{}{}
 			}
 		}
 	}()
-	go func() { exit <- signalCode(<-sig) }()
-	notify(sig)
+	go func() { exitc <- signalCode(<-sigc) }()
+	notify(sigc)
 }
 
 // Add adds a function to the front of the defer list.
 func Add(f func()) {
-	d := defunc{f, make(chan empty)}
-	queue <- d
+	d := defunc{f, make(chan struct{})}
+	deferc <- d
 	<-d.added
 }
 
 // Exit runs all defers, then exits the program.
 func Exit(code int) {
-	exit <- code
+	exitc <- code
 	select {}
 }
