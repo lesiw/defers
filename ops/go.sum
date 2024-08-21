@@ -1,0 +1,16 @@
+github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
+github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
+golang.org/x/sync v0.7.0 h1:YsImfSBoP9QPYL0xyKJPq0gcaJdG3rInoqxTWbfQu9M=
+golang.org/x/sync v0.7.0/go.mod h1:Czt+wKu1gCyEFDUtn0jG5QVvpJ6rzVqr5aXyt9drQfk=
+gotest.tools/v3 v3.5.1 h1:EENdUnS3pdur5nybKYIh2Vfgc8IUNBjxDPSjtiJcOzU=
+gotest.tools/v3 v3.5.1/go.mod h1:isy3WKz7GK6uNw/sbHzfKBLvlvXwUyV06n6brMxxopU=
+labs.lesiw.io/ops v0.0.0-20240821012245-3d414d9dd261 h1:UIojLrsCR0wDv2fHLwPOB8bUVSqlRfZAIMnE06/NIZk=
+labs.lesiw.io/ops v0.0.0-20240821012245-3d414d9dd261/go.mod h1:FvHlETKmvogcAZ/X+imHZaOqMav4chMlZTmIUckQIkA=
+lesiw.io/clerk v0.1.0 h1:hamIinfP4nfr6cxqV9z8ZdQqRif9IlprC9mjRPkG3Dk=
+lesiw.io/clerk v0.1.0/go.mod h1:WMyvgTe+3Eob36b6KX86MOaxaeNMvv/HZTSsf2Dedhg=
+lesiw.io/cmdio v0.0.0-20240723224912-c34a917524ae h1:aqHZcLDlBAa0oDoE+t2K7tGDBtHKB60eEou/Z76vtKg=
+lesiw.io/cmdio v0.0.0-20240723224912-c34a917524ae/go.mod h1:1QvHpQzUItUIaITiA5aQAdZEvaNXn5c98EOaRxVsfXs=
+lesiw.io/flag v0.7.0 h1:+8rTdoplDMBhOSKok5eKP6ZuLLPTodkDABRY7jfX5JU=
+lesiw.io/flag v0.7.0/go.mod h1:bJx6Hir8MAXkNiO6BbrvhwZuaJF4rQWthQ7pc1DlWZY=
+lesiw.io/ops v0.8.0 h1:ldw0VeE/xNtMrXzJwzWZRX5KubylLIpOY9VliIfha/s=
+lesiw.io/ops v0.8.0/go.mod h1:13u2irogMVNWiZqfom1d4FGPnK4c1iCQ53QvwsRIJbE=

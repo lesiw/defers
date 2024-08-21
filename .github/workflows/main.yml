@@ -1,12 +1,9 @@
 name: main
 on: [push]
 jobs:
-  run:
+  op:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
-      - name: Setup Docker
-        uses: docker/setup-buildx-action@v3
-      - name: Run
-        run: '"$(wget -O- lesiw.io/run | sh)" -v'
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+      - run: '"$(wget -O- lesiw.io/op | sh)"'
