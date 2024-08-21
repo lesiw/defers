@@ -5,9 +5,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
+      - if: "${{ matrix.os == 'windows-latest' }}"
+        run: |
+          curl -L https://frippery.org/files/busybox/busybox.exe -o C:\busybox.exe
+          mkdir C:\busybox
+          move C:\busybox.exe C:\busybox\busybox.exe
+          C:\busybox\busybox.exe --install -s C:\busybox
+          echo "C:\busybox" >> $env:GITHUB_PATH
       - uses: actions/setup-go@v5
         with:
           go-version: '1.23'
