@@ -2,8 +2,15 @@ name: main
 on: [push]
 jobs:
   op:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
-      - run: '"$(wget -O- lesiw.io/op | sh)"'
+        with:
+          go-version: '1.23'
+          check-latest: true
+      - run: go install lesiw.io/op@latest
+      - run: op
