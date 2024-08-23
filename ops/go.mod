@@ -4,7 +4,7 @@ go 1.22.6
 
 require (
 	labs.lesiw.io/ops v0.0.0-20240821012245-3d414d9dd261
-	lesiw.io/ops v0.8.0
+	lesiw.io/ops v0.9.0
 )
 
 require (

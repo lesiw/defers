@@ -12,5 +12,5 @@ lesiw.io/cmdio v0.0.0-20240723224912-c34a917524ae h1:aqHZcLDlBAa0oDoE+t2K7tGDBtH
 lesiw.io/cmdio v0.0.0-20240723224912-c34a917524ae/go.mod h1:1QvHpQzUItUIaITiA5aQAdZEvaNXn5c98EOaRxVsfXs=
 lesiw.io/flag v0.7.0 h1:+8rTdoplDMBhOSKok5eKP6ZuLLPTodkDABRY7jfX5JU=
 lesiw.io/flag v0.7.0/go.mod h1:bJx6Hir8MAXkNiO6BbrvhwZuaJF4rQWthQ7pc1DlWZY=
-lesiw.io/ops v0.8.0 h1:ldw0VeE/xNtMrXzJwzWZRX5KubylLIpOY9VliIfha/s=
-lesiw.io/ops v0.8.0/go.mod h1:13u2irogMVNWiZqfom1d4FGPnK4c1iCQ53QvwsRIJbE=
+lesiw.io/ops v0.9.0 h1:39Y7rNC2KXB+AS7Hi6xSf45iiqjnM2Ou6YmXxjndQHA=
+lesiw.io/ops v0.9.0/go.mod h1:13u2irogMVNWiZqfom1d4FGPnK4c1iCQ53QvwsRIJbE=
