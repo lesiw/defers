@@ -10,24 +10,23 @@ package defers
 
 import "os"
 
+var (
+	exit = os.Exit
+
+	exitc  = make(chan int)
+	deferc = make(chan defunc)
+	runc   = make(chan chan struct{})
+	sigc   = make(chan os.Signal, 1)
+)
+
 type defunc struct {
 	fn    func()
 	added chan struct{}
 }
 
-var (
-	defers []func()
-
-	exit = os.Exit
-
-	exitc  = make(chan int)
-	deferc = make(chan defunc)
-	clearc = make(chan chan struct{})
-	sigc   = make(chan os.Signal, 1)
-)
-
 func init() {
 	go func() {
+		var defers []func()
 		for {
 			select {
 			case code := <-exitc:
@@ -38,7 +37,10 @@ func init() {
 			case d := <-deferc:
 				defers = append([]func(){d.fn}, defers...)
 				d.added <- struct{}{}
-			case c := <-clearc:
+			case c := <-runc:
+				for _, f := range defers {
+					f()
+				}
 				defers = []func(){}
 				c <- struct{}{}
 			}
@@ -59,4 +61,22 @@ func Add(f func()) {
 func Exit(code int) {
 	exitc <- code
 	select {}
+}
+
+// Recover runs defers in the event of a panic and clears the defer list.
+// For best results, defer Recover in main().
+//
+//	func main() {
+//	    defer defers.Recover()
+//	    panic("error") // Will run defers, then re-panic.
+//	}
+func Recover() {
+	r := recover()
+	if r == nil {
+		return
+	}
+	c := make(chan struct{})
+	runc <- c
+	<-c
+	panic(r)
 }
