@@ -63,20 +63,15 @@ func Exit(code int) {
 	select {}
 }
 
-// Recover runs defers in the event of a panic and clears the defer list.
-// For best results, defer Recover in main().
+// Run runs defers and clears the defer list.
+// For best results, defer Run in main().
 //
 //	func main() {
-//	    defer defers.Recover()
-//	    panic("error") // Will run defers, then re-panic.
+//	    defer defers.Run()
+//	    panic("error") // Will run defers before exiting the program.
 //	}
-func Recover() {
-	r := recover()
-	if r == nil {
-		return
-	}
+func Run() {
 	c := make(chan struct{})
 	runc <- c
 	<-c
-	panic(r)
 }

@@ -71,10 +71,10 @@ func TestProc(t *testing.T) {
 	}
 }
 
-func TestRecoverPanic(t *testing.T) {
+func TestRunPanic(t *testing.T) {
 	if os.Getenv("DEFER_TEST_PROC") == "1" {
 		func() {
-			defer Recover()
+			defer Run()
 			Add(func() { fmt.Println("world") })
 			Add(func() { fmt.Printf("hello ") })
 			panic("panicking")
@@ -82,7 +82,7 @@ func TestRecoverPanic(t *testing.T) {
 		os.Exit(0) // Should not be reachable.
 	}
 	buf := new(bytes.Buffer)
-	cmd := exec.Command(os.Args[0], "-test.run=TestRecoverPanic")
+	cmd := exec.Command(os.Args[0], "-test.run=TestRunPanic")
 	cmd.Env = append(os.Environ(), "DEFER_TEST_PROC=1")
 	cmd.Stdout = buf
 
@@ -103,17 +103,17 @@ func TestRecoverPanic(t *testing.T) {
 	}
 }
 
-func TestRecoverNoPanic(t *testing.T) {
+func TestRunNoPanic(t *testing.T) {
 	if os.Getenv("DEFER_TEST_PROC") == "1" {
 		func() {
-			defer Recover()
+			defer Run()
 			Add(func() { fmt.Println("world") })
 			Add(func() { fmt.Printf("hello ") })
 		}()
 		os.Exit(0)
 	}
 	buf := new(bytes.Buffer)
-	cmd := exec.Command(os.Args[0], "-test.run=TestRecoverNoPanic")
+	cmd := exec.Command(os.Args[0], "-test.run=TestRunNoPanic")
 	cmd.Env = append(os.Environ(), "DEFER_TEST_PROC=1")
 	cmd.Stdout = buf
 
@@ -122,7 +122,10 @@ func TestRecoverNoPanic(t *testing.T) {
 	if err != nil {
 		t.Errorf("cmd.Run() = %q, want <nil>", err)
 	}
-	if got, want := buf.String(), ""; got != want {
+	// The subprocess will contain additional test-related output,
+	// so only check the first line.
+	line := strings.Split(buf.String(), "\n")[0]
+	if got, want := line, "hello world"; got != want {
 		t.Errorf("proc output -want +got\n%s", cmp.Diff(want, got))
 	}
 }

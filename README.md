@@ -31,6 +31,7 @@ var stop = false
 var success bool
 
 func main() {
+    defer defers.Run()
     defers.Add(func() {
         if success {
             fmt.Fprintln(os.Stderr, "The program executed successfully.")
@@ -44,8 +45,7 @@ func main() {
     }
     fmt.Println("Hello world!")
     success = true
-    defers.Exit(0)
 }
 ```
 
-[▶️ Run this example on the Go Playground](https://go.dev/play/p/amY5VkD51QF)
+[▶️ Run this example on the Go Playground](https://go.dev/play/p/Ser5Yr68rko)
