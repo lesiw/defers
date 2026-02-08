@@ -18,12 +18,11 @@ func TestDefers(t *testing.T) {
 	t.Cleanup(func() { exit = origExitFn })
 	exitcode := make(chan int)
 	exit = func(code int) { exitcode <- code }
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		t.Run(fmt.Sprintf("%d defers", i), func(t *testing.T) {
 			wantcode := rand.Intn(127)
 			a := []int{}
-			for j := 0; j < i; j++ {
-				j := j
+			for j := range i {
 				Add(func() { a = append(a, j) })
 			}
 			go Exit(wantcode)
