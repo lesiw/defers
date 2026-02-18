@@ -3,8 +3,8 @@ module test/ops
 go 1.24.7
 
 require (
-	labs.lesiw.io/ops v0.0.0-20260208180824-4bec617941f1
-	lesiw.io/ops v0.14.0
+	labs.lesiw.io/ops v0.0.0-20260218014211-4fbc54d14da7
+	lesiw.io/ops v0.15.0
 )
 
 require (
@@ -17,7 +17,7 @@ require (
 	golang.org/x/tools v0.39.0 // indirect
 	lesiw.io/checker v0.12.1-0.20260208011356-b1121c49fa1e // indirect
 	lesiw.io/clerk v0.2.0 // indirect
-	lesiw.io/command v0.0.0-20260102111911-9b5a01e7c56b // indirect
+	lesiw.io/command v0.0.0-20260126021408-77eb589ec7af // indirect
 	lesiw.io/defers v0.9.0 // indirect
 	lesiw.io/errcheck v1.0.0 // indirect
 	lesiw.io/flag v0.7.0 // indirect
@@ -26,5 +26,5 @@ require (
 	lesiw.io/plscheck v0.21.0 // indirect
 	lesiw.io/prefix v0.1.0 // indirect
 	lesiw.io/tidytypes v0.2.0 // indirect
-	lesiw.io/zeros v0.2.0 // indirect
+	lesiw.io/zeros v0.3.0 // indirect
 )
