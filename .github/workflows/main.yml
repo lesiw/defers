@@ -4,87 +4,93 @@ on:
     branches: [main, next]
   pull_request:
   workflow_dispatch:
+env:
+  GOTOOLCHAIN: local
 jobs:
-  ubuntu:
-    strategy:
-      matrix:
-        go: [stable, oldstable]
+  fmt:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
-          go-version: ${{ matrix.go }}
-      - run: go run lesiw.io/op@latest
-  macos:
-    needs: ubuntu
+          go-version: stable
+      - shell: bash
+        run: |
+          files=$(go run lesiw.io/gorc/gofmt@latest -l .)
+          echo "$files"
+          test -z "$files"
+  test:
+    needs: fmt
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
         go: [stable, oldstable]
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go }}
-      - run: go run lesiw.io/op@latest
-  windows:
-    needs: ubuntu
-    strategy:
-      matrix:
-        go: [stable, oldstable]
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.go }}
-      - run: go run lesiw.io/op@latest
+      - run: go run lesiw.io/gorc/go@latest test ./...
   alpine:
-    needs: ubuntu
+    needs: fmt
     strategy:
       matrix:
         go: [stable, oldstable]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - id: go-version
+      - uses: actions/checkout@v7
+      - id: go
         run: |
           if [ "${{ matrix.go }}" = "stable" ]; then
-            echo "version=$(curl -s 'https://go.dev/VERSION?m=text' | head -1)" >> $GITHUB_OUTPUT
+            version=$(curl -s 'https://go.dev/VERSION?m=text' | head -1)
           else
-            echo "version=$(curl -s 'https://go.dev/dl/?mode=json' | jq -r '.[1].version')" >> $GITHUB_OUTPUT
+            version=$(curl -s 'https://go.dev/dl/?mode=json' | jq -r '.[1].version')
           fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
       - run: |
-          docker run --rm -v $PWD:/work -w /work -e CI alpine:latest sh -c '
-            apk add --no-cache build-base curl tar
-            curl -L "https://go.dev/dl/${{ steps.go-version.outputs.version }}.linux-amd64.tar.gz" | tar -C /usr/local -xz
+          docker run --rm -v "$PWD:/work" -w /work alpine:latest sh -c '
+            apk add --no-cache curl tar gcc musl-dev
+            curl -L "https://go.dev/dl/${{ steps.go.outputs.version }}.linux-amd64.tar.gz" | tar -C /usr/local -xz
             export PATH=/usr/local/go/bin:$PATH
-            export PATH=$(go env GOPATH)/bin:$PATH
-            go run lesiw.io/op@latest
+            go run lesiw.io/gorc/go@latest test ./...
           '
   freebsd:
-    needs: ubuntu
+    needs: fmt
     strategy:
       matrix:
         go: [stable, oldstable]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - id: go-version
+      - uses: actions/checkout@v7
+      - id: go
         run: |
           if [ "${{ matrix.go }}" = "stable" ]; then
-            echo "version=$(curl -s 'https://go.dev/VERSION?m=text' | head -1)" >> $GITHUB_OUTPUT
+            version=$(curl -s 'https://go.dev/VERSION?m=text' | head -1)
           else
-            echo "version=$(curl -s 'https://go.dev/dl/?mode=json' | jq -r '.[1].version')" >> $GITHUB_OUTPUT
+            version=$(curl -s 'https://go.dev/dl/?mode=json' | jq -r '.[1].version')
           fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
       - uses: vmactions/freebsd-vm@v1
         with:
-          usesh: true
-          envs: CI
           run: |
             pkg install -y curl
-            curl -L "https://go.dev/dl/${{ steps.go-version.outputs.version }}.freebsd-amd64.tar.gz" | tar -C /usr/local -xz
+            curl -L "https://go.dev/dl/${{ steps.go.outputs.version }}.freebsd-amd64.tar.gz" | tar -C /usr/local -xz
             export PATH=/usr/local/go/bin:$PATH
-            export PATH=$(go env GOPATH)/bin:$PATH
-            go run lesiw.io/op@latest
+            go run lesiw.io/gorc/go@latest test ./...
+  cross:
+    needs: fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: stable
+      - shell: bash
+        run: |
+          for target in linux/386 linux/arm linux/arm64 darwin/amd64 \
+              windows/386 plan9/386 plan9/arm plan9/amd64; do
+            CGO_ENABLED=0 GOOS="${target%/*}" GOARCH="${target#*/}" \
+              go build -o /dev/null ./...
+          done

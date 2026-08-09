@@ -1,0 +1,3 @@
+gofmt -s
+go tool goimports -local=lesiw.io,labs.lesiw.io
+go tool lesiw.io/tools/cmd/fmt
