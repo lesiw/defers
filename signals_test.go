@@ -21,7 +21,7 @@ func TestSignal(t *testing.T) {
 		fmt.Println("READY") // Signal that the process is ready.
 		select {}
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	cmd := exec.CommandContext(ctx, os.Args[0],
 		"-test.v", "-test.run=TestSignal",
 	)

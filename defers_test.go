@@ -22,8 +22,10 @@ func TestDefers(t *testing.T) {
 	exit = func(code int) { exitcode <- code }
 	for i := range 10 {
 		t.Run(fmt.Sprintf("%d defers", i), func(t *testing.T) {
-			wantcode := rand.Intn(127)
-			a := []int{}
+			var (
+				wantcode = rand.Intn(127)
+				a        = []int{}
+			)
 			for j := range i {
 				Add(func() { a = append(a, j) })
 			}
@@ -98,7 +100,7 @@ func TestRunPanic(t *testing.T) {
 	}
 	// The subprocess will contain additional test-related output,
 	// so only check the first line.
-	line := strings.Split(buf.String(), "\n")[0]
+	line, _, _ := strings.Cut(buf.String(), "\n")
 	if got, want := line, "hello world"; got != want {
 		t.Errorf("proc output -want +got\n%s", cmp.Diff(want, got))
 	}
@@ -125,7 +127,7 @@ func TestRunNoPanic(t *testing.T) {
 	}
 	// The subprocess will contain additional test-related output,
 	// so only check the first line.
-	line := strings.Split(buf.String(), "\n")[0]
+	line, _, _ := strings.Cut(buf.String(), "\n")
 	if got, want := line, "hello world"; got != want {
 		t.Errorf("proc output -want +got\n%s", cmp.Diff(want, got))
 	}
