@@ -23,7 +23,8 @@ func TestSignal(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	cmd := exec.CommandContext(ctx, os.Args[0],
-		"-test.v", "-test.run=TestSignal")
+		"-test.v", "-test.run=TestSignal",
+	)
 	cmd.Env = append(os.Environ(), "DEFER_TEST_PROC=1")
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
